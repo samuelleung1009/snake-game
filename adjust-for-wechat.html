@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tip-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .wechat-tips {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .tip-item {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .tip-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .mobile-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .browser-tip {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border: 1px solid #bbdefb;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="tip-box">
+        <h1>🎮 贪食蛇游戏 - 微信浏览器优化提示</h1>
+        
+        <p>检测到你在微信/企业微信中访问游戏页面。</p>
+        
+        <div class="wechat-tips">
+            <h3>针对微信/企业微信的优化：</h3>
+            <div class="tip-item">已添加底部安全区域适配，防止内容被底部工具栏遮挡</div>
+            <div class="tip-item">优化了游戏画布大小，确保完整显示</div>
+            <div class="tip-item">添加了兼容性处理，提升游戏体验</div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="snake_game_mobile.html" class="action-btn mobile-btn">
+                📱 立即游玩手机版（触摸手势控制）
+            </a>
+            <a href="snake_game.html" class="action-btn">
+                💻 立即游玩电脑版（键盘方向键控制）
+            </a>
+            <a href="./" class="action-btn" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">
+                🏠 返回游戏主页
+            </a>
+        </div>
+        
+        <div class="browser-tip">
+            💡 <strong>最佳体验建议：</strong><br>
+            如果在微信中游玩体验不佳，建议点击右上角"..." → "在浏览器中打开"
+        </div>
+    </div>
+</body>
+</html>

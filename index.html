@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>🎮 贪食蛇游戏合集 - Snake Game Collection</title>
     <style>
         * {
@@ -25,7 +25,9 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 40px;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 20px));
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: env(safe-area-inset-bottom, 0px);
         }
         
         header {
