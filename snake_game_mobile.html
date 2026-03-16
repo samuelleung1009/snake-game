@@ -287,7 +287,7 @@
         // 游戏配置
         const config = {
             gridSize: 20,
-            initialSpeed: 150,
+            initialSpeed: 100, // 从150减少到100ms，提高响应速度
             canvasSize: 0
         };
         
@@ -527,11 +527,12 @@
                 game.snake.pop();
             }
             
-            game.direction = game.nextDirection;
+            // 方向已经在changeDirection中立即更新过了
+            // game.direction = game.nextDirection; // 已删除，现在立即生效
         }
         
-        // 方向控制
-        function changeDirection(direction) {
+        // 方向控制 - 输入立即生效，减少延迟感
+        function changeDirection(newDirection) {
             const opposite = {
                 up: 'down',
                 down: 'up',
@@ -539,9 +540,49 @@
                 right: 'left'
             };
             
-            if (direction !== opposite[game.direction]) {
-                game.nextDirection = direction;
+            // 1. 不能直接转向相反方向
+            if (newDirection === opposite[game.direction]) {
+                // 给用户一个视觉反馈，告诉为什么不能转向
+                flashButton(newDirection, 'error');
+                return;
             }
+            
+            // 2. 立即更新方向，而不是等待下一循环
+            game.nextDirection = newDirection;
+            game.direction = newDirection;
+            
+            // 3. 视觉反馈：按钮闪烁，表示输入已接收
+            flashButton(newDirection, 'success');
+            
+            // 4. 调试信息
+            console.log('方向立即改变:', newDirection, '蛇位置:', game.snake[0]);
+            
+            // 5. 如果蛇长度为1，允许立即转向（特殊情况）
+            if (game.snake.length === 1) {
+                // 单格蛇可以任意转向
+                game.direction = newDirection;
+                game.nextDirection = newDirection;
+                return;
+            }
+        }
+        
+        // 按钮视觉反馈
+        function flashButton(direction, type) {
+            const buttonClass = direction === 'pause' ? 'pause' : direction;
+            const button = document.querySelector(`.direction-btn.${buttonClass}`);
+            
+            if (!button) return;
+            
+            const originalBorder = button.style.border;
+            const flashColor = type === 'success' ? '#48bb78' : '#e53e3e';
+            
+            // 快速闪烁效果
+            button.style.border = `3px solid ${flashColor}`;
+            button.style.transition = 'border 0.1s';
+            
+            setTimeout(() => {
+                button.style.border = originalBorder || 'none';
+            }, 100);
         }
         
         // 暂停游戏
@@ -611,12 +652,15 @@
             const deltaX = touch.clientX - touchStartX;
             const deltaY = touch.clientY - touchStartY;
             
+            // 降低滑动阈值，提高灵敏度
+            const threshold = 25; // 从30降低到25
+            
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 30) changeDirection('right');
-                else if (deltaX < -30) changeDirection('left');
+                if (deltaX > threshold) changeDirection('right');
+                else if (deltaX < -threshold) changeDirection('left');
             } else {
-                if (deltaY > 30) changeDirection('down');
-                else if (deltaY < -30) changeDirection('up');
+                if (deltaY > threshold) changeDirection('down');
+                else if (deltaY < -threshold) changeDirection('up');
             }
         }, { passive: false });
         
