@@ -68,6 +68,7 @@
             align-items: center;
             padding: 10px;
             min-height: 0; /* 重要：防止溢出 */
+            width: 100%;
         }
         
         .game-area {
@@ -83,8 +84,10 @@
             background: #2d3748;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            max-width: 95%;
-            max-height: 95%;
+            max-width: 100%;  /* 改为100%，充分利用宽度 */
+            max-height: 90%;
+            /* 确保宽屏比例 */
+            aspect-ratio: 1.3 / 1; /* 宽高比 1.3:1 */
         }
         
         /* 手势提示 */
@@ -284,10 +287,10 @@
     </div>
 
     <script>
-        // 游戏配置
+        // 游戏配置 - 减小网格大小，增加跑道空间
         const config = {
-            gridSize: 20,
-            initialSpeed: 100, // 从150减少到100ms，提高响应速度
+            gridSize: 18, // 从20减小到18，增加网格数量，让跑道更宽
+            initialSpeed: 100,
             canvasSize: 0
         };
         
@@ -313,37 +316,50 @@
         const scoreDisplay = document.getElementById('scoreDisplay');
         const highScoreDisplay = document.getElementById('highScoreDisplay');
         
-        // 初始化画布
+        // 初始化画布 - 创建更宽的游戏区域
         function initCanvas() {
             const container = document.querySelector('.game-area-container');
             const containerRect = container.getBoundingClientRect();
             
-            // 使用容器高度的80%，确保游戏区域足够大
-            const maxSize = Math.min(containerRect.width, containerRect.height * 0.8) - 40;
-            canvas.width = maxSize;
-            canvas.height = maxSize;
-            config.canvasSize = Math.min(canvas.width, canvas.height);
+            // 创建宽屏画布：宽度是高度的1.3倍
+            const maxHeight = containerRect.height * 0.75; // 使用容器高度的75%
+            const maxWidth = containerRect.width - 40;     // 使用容器全宽减边距
             
-            console.log('画布大小:', maxSize);
+            // 选择更宽的尺寸，让游戏区域更宽敞
+            canvas.width = Math.min(maxWidth, maxHeight * 1.3);
+            canvas.height = Math.min(maxHeight, maxWidth / 1.3);
+            
+            // 确保最小尺寸
+            canvas.width = Math.max(canvas.width, 300);
+            canvas.height = Math.max(canvas.height, 250);
+            
+            config.canvasSize = canvas.width; // 使用宽度作为参考尺寸
+            
+            console.log('宽屏画布大小:', canvas.width, '×', canvas.height);
         }
         
-        // 随机生成食物（避免在蛇身上）
+        // 随机生成食物（避免在蛇身上）- 支持宽屏
         function generateFood() {
-            const gridCount = Math.floor(config.canvasSize / config.gridSize);
+            const gridCountX = Math.floor(canvas.width / config.gridSize);
+            const gridCountY = Math.floor(canvas.height / config.gridSize);
+            
             let attempts = 0;
             const maxAttempts = 50;
             
             do {
                 game.food = {
-                    x: Math.floor(Math.random() * gridCount),
-                    y: Math.floor(Math.random() * gridCount)
+                    x: Math.floor(Math.random() * gridCountX),
+                    y: Math.floor(Math.random() * gridCountY)
                 };
                 attempts++;
             } while (isFoodOnSnake() && attempts < maxAttempts);
             
             if (attempts >= maxAttempts) {
-                // 如果找不到位置，强制放在0,0位置
-                game.food = {x: 0, y: 0};
+                // 如果找不到位置，强制放在中央位置
+                game.food = {
+                    x: Math.floor(gridCountX / 2),
+                    y: Math.floor(gridCountY / 2)
+                };
             }
         }
         
@@ -481,7 +497,7 @@
             }
         }
         
-        // 更新游戏状态
+        // 更新游戏状态 - 支持宽屏游戏区域
         function update() {
             if (!game.isPlaying || game.isPaused) return;
             
@@ -494,9 +510,11 @@
                 case 'right': head.x++; break;
             }
             
-            // 边界检查
-            const gridCount = Math.floor(config.canvasSize / config.gridSize);
-            if (head.x < 0 || head.y < 0 || head.x >= gridCount || head.y >= gridCount) {
+            // 边界检查 - 独立计算X和Y方向的格子数量
+            const gridCountX = Math.floor(canvas.width / config.gridSize);
+            const gridCountY = Math.floor(canvas.height / config.gridSize);
+            
+            if (head.x < 0 || head.y < 0 || head.x >= gridCountX || head.y >= gridCountY) {
                 gameOver();
                 return;
             }
@@ -600,14 +618,15 @@
             resetGame();
         }
         
-        // 重置游戏 - 从中央开始
+        // 重置游戏 - 从中央开始，支持宽屏
         function resetGame() {
-            // 计算游戏区域中央位置
-            const gridCount = Math.floor(config.canvasSize / config.gridSize);
-            const centerX = Math.floor(gridCount / 2);
-            const centerY = Math.floor(gridCount / 2);
+            // 计算宽屏游戏区域中央位置
+            const gridCountX = Math.floor(canvas.width / config.gridSize);
+            const gridCountY = Math.floor(canvas.height / config.gridSize);
+            const centerX = Math.floor(gridCountX / 2);
+            const centerY = Math.floor(gridCountY / 2);
             
-            // 蛇从中央开始，水平向右
+            // 蛇从中央开始，水平向右（有更多左右空间）
             game.snake = [
                 {x: centerX, y: centerY},        // 蛇头
                 {x: centerX - 1, y: centerY},   // 蛇身第一部分
