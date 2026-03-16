@@ -195,6 +195,80 @@
             gap: 8px;
         }
         
+        /* 方向键控制样式 */
+        .direction-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .direction-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+        
+        .direction-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 60px;
+            user-select: none;
+            border: 2px solid transparent;
+        }
+        
+        .direction-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4288 100%);
+        }
+        
+        .direction-btn.up-btn {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        
+        .direction-btn.left-btn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        .direction-btn.center-btn {
+            grid-column: 2;
+            grid-row: 2;
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+        
+        .direction-btn.right-btn {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        .direction-btn.down-btn {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        
+        .direction-icon {
+            font-size: 1.5em;
+            margin-bottom: 4px;
+        }
+        
+        .direction-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        /* 移除旧的样式 */
         .instruction-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -389,28 +463,43 @@
                 <button class="control-btn danger" onclick="showGuide()">手势说明</button>
             </div>
             
-            <!-- 备用按钮控制（手势控制失败时使用） -->
+            <!-- 备用方向键控制（经典方向键布局） -->
             <div class="instruction-panel">
                 <div class="instruction-title">
-                    <span>🎮 备用控制</span>
-                    <span style="font-size: 0.8em; color: #999; font-weight: normal;">(如果手势不好用)</span>
+                    <span>🎮 方向键控制</span>
+                    <span style="font-size: 0.8em; color: #999; font-weight: normal;">(备用控制，如果手势不好用)</span>
                 </div>
-                <div class="instruction-list">
-                    <div class="instruction-item" onclick="changeDirection('up')">
-                        <span class="instruction-icon">⬆️</span>
-                        <div>向上</div>
-                    </div>
-                    <div class="instruction-item" onclick="changeDirection('left')">
-                        <span class="instruction-icon">⬅️</span>
-                        <div>向左</div>
-                    </div>
-                    <div class="instruction-item" onclick="changeDirection('right')">
-                        <span class="instruction-icon">➡️</span>
-                        <div>向右</div>
-                    </div>
-                    <div class="instruction-item" onclick="changeDirection('down')">
-                        <span class="instruction-icon">⬇️</span>
-                        <div>向下</div>
+                <div class="direction-controls">
+                    <div class="direction-grid">
+                        <!-- 上方按钮 -->
+                        <div></div>
+                        <div class="direction-btn up-btn" onclick="changeDirection('up')">
+                            <span class="direction-icon">⬆️</span>
+                            <div class="direction-label">向上</div>
+                        </div>
+                        <div></div>
+                        
+                        <!-- 中间行 -->
+                        <div class="direction-btn left-btn" onclick="changeDirection('left')">
+                            <span class="direction-icon">⬅️</span>
+                            <div class="direction-label">向左</div>
+                        </div>
+                        <div class="direction-btn center-btn" onclick="pauseGame()">
+                            <span class="direction-icon">⏸️</span>
+                            <div class="direction-label">暂停</div>
+                        </div>
+                        <div class="direction-btn right-btn" onclick="changeDirection('right')">
+                            <span class="direction-icon">➡️</span>
+                            <div class="direction-label">向右</div>
+                        </div>
+                        
+                        <!-- 下方按钮 -->
+                        <div></div>
+                        <div class="direction-btn down-btn" onclick="changeDirection('down')">
+                            <span class="direction-icon">⬇️</span>
+                            <div class="direction-label">向下</div>
+                        </div>
+                        <div></div>
                     </div>
                 </div>
             </div>
@@ -586,7 +675,7 @@
                     ctx.lineTo(x + config.gridSize - radius, y);
                     ctx.quadraticCurveTo(x + config.gridSize, y, x + config.gridSize, y + radius);
                     ctx.lineTo(x + config.gridSize, y + config.gridSize - radius);
-                    ctx.quadraticCurveTo(x + config.gridSize, y + config.canvasSize, x + config.gridSize - radius, y + config.gridSize);
+                    ctx.quadraticCurveTo(x + config.gridSize, y + config.gridSize, x + config.gridSize - radius, y + config.gridSize);
                     ctx.lineTo(x + radius, y + config.gridSize);
                     ctx.quadraticCurveTo(x, y + config.gridSize, x, y + config.gridSize - radius);
                     ctx.lineTo(x, y + radius);
