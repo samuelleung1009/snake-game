@@ -1,0 +1,28 @@
+# GitHub Pages Configuration
+title: "🎮 贪食蛇游戏合集 (Snake Game)"
+description: "两个版本的贪食蛇游戏：电脑版和手机版"
+theme: jekyll-theme-minimal
+url: "https://samuelleung1009.github.io"
+baseurl: "/snake-game"
+
+# Build settings
+permalink: pretty
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Custom settings
+author: "SaMuEL"
+email: ""
+twitter_username: ""
+github_username: "samuelleung1009"
+github_repo: "snake-game"
+
+# Navigation
+navigation:
+  - title: "首页"
+    url: /
+  - title: "电脑版游戏"
+    url: /snake_game.html
+  - title: "手机版游戏"
+    url: /snake_game_mobile.html

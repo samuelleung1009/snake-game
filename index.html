@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 贪食蛇游戏合集 - Snake Game Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .version-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .version-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+        
+        .version-card.mobile {
+            border-color: #48bb78;
+        }
+        
+        .version-card.mobile:hover {
+            border-color: #38a169;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            font-size: 2.5em;
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .card-title .mobile {
+            color: #38a169;
+        }
+        
+        .card-title .pc {
+            color: #667eea;
+        }
+        
+        .card-content {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .play-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .play-button.mobile {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .play-button.mobile:hover {
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .qrcode-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        .qrcode-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .qrcode {
+            display: inline-block;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .version-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 贪食蛇游戏合集</h1>
+            <p class="subtitle">Snake Game Collection • 点击版本即可开始游戏</p>
+            <p>专为不同设备优化的两个版本，选择一个最适合你的！</p>
+        </header>
+        
+        <div class="version-grid">
+            <!-- PC版 -->
+            <a href="snake_game.html" class="version-card">
+                <div class="card-header">
+                    <div class="card-icon">💻</div>
+                    <div>
+                        <h2 class="card-title"><span class="pc">电脑版</span> 贪食蛇</h2>
+                        <p>适合键盘操作</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>经典贪食蛇游戏，专为电脑和笔记本电脑优化设计。使用键盘方向键控制，适合在办公室或家中游玩。</p>
+                    <ul class="feature-list">
+                        <li>键盘方向键控制 (↑ ↓ ← →)</li>
+                        <li>精美的现代化界面</li>
+                        <li>最高分记录系统</li>
+                        <li>暂停/继续功能</li>
+                        <li>自动保存游戏进度</li>
+                    </ul>
+                </div>
+                <button class="play-button">🎮 立即游玩电脑版</button>
+            </a>
+            
+            <!-- 手机版 -->
+            <a href="snake_game_mobile.html" class="version-card mobile">
+                <div class="card-header">
+                    <div class="card-icon">📱</div>
+                    <div>
+                        <h2 class="card-title"><span class="mobile">手机版</span> 贪食蛇</h2>
+                        <p>触控手势操作</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>专为手机和平板优化的版本，支持触摸手势操作。在屏幕上滑动即可控制蛇的移动方向。</p>
+                    <ul class="feature-list">
+                        <li>触摸手势控制（上下左右滑动）</li>
+                        <li>专为竖屏优化设计</li>
+                        <li>备用方向按钮</li>
+                        <li>震动反馈（设备支持时）</li>
+                        <li>适合通勤路上游玩</li>
+                    </ul>
+                </div>
+                <button class="play-button mobile">📱 立即游玩手机版</button>
+            </a>
+        </div>
+        
+        <div class="qrcode-section">
+            <h3>📱 用手机扫描二维码</h3>
+            <div class="qrcode">
+                <!-- QR Code will be generated by GitHub Pages -->
+                <div style="background: #f8f9fa; padding: 40px; border-radius: 10px; display: inline-block;">
+                    <p style="margin-bottom: 10px; color: #666;">扫描二维码分享</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://samuelleung1009.github.io/snake-game/" 
+                         alt="游戏二维码" width="150" height="150">
+                </div>
+            </div>
+            <p style="color: #666; margin-top: 10px;">扫描后直接进入游戏主页</p>
+        </div>
+        
+        <div class="footer">
+            <p>🎮 贪食蛇游戏合集 | 部署于 GitHub Pages</p>
+            <p>版本: v1.0 | 最后更新: 2026年3月16日</p>
+            <p style="margin-top: 20px;">
+                <a href="https://github.com/samuelleung1009/snake-game" target="_blank" class="github-link">
+                    <span>🐙 GitHub 仓库</span>
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
