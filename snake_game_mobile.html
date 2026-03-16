@@ -369,110 +369,119 @@
             ctx.fillStyle = '#2d3748';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 绘制蛇 - 区分头和尾
+            // 绘制游戏边界墙（4条美丽边框）
+            drawWalls();
+            
+            // 绘制蛇 - 区分头和尾（考虑墙壁偏移）
+            const wallOffset = 6; // 与墙壁厚度一致
+            
             game.snake.forEach((segment, index) => {
                 const isHead = index === 0;
                 const isTail = index === game.snake.length - 1;
+                
+                // 计算蛇的实际绘制位置（考虑墙壁）
+                const drawX = segment.x * config.gridSize + wallOffset;
+                const drawY = segment.y * config.gridSize + wallOffset;
                 
                 if (isHead) {
                     // 蛇头 - 亮绿色，圆形
                     ctx.fillStyle = '#48bb78';
                     ctx.beginPath();
                     ctx.arc(
-                        segment.x * config.gridSize + config.gridSize / 2,
-                        segment.y * config.gridSize + config.gridSize / 2,
+                        drawX + config.gridSize / 2,
+                        drawY + config.gridSize / 2,
                         config.gridSize / 2 - 1,
                         0,
                         Math.PI * 2
                     );
                     ctx.fill();
                     
-                    // 蛇头眼睛（小圆点）
+                    // 蛇头眼睛（小圆点）- 使用调整后的位置
                     ctx.fillStyle = 'white';
                     const eyeSize = config.gridSize / 6;
                     if (game.direction === 'right') {
                         ctx.beginPath();
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize - config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize / 3,
+                            drawX + config.gridSize - config.gridSize / 3,
+                            drawY + config.gridSize / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize - config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            drawX + config.gridSize - config.gridSize / 3,
+                            drawY + config.gridSize * 2 / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.fill();
                     } else if (game.direction === 'left') {
                         ctx.beginPath();
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize / 3,
+                            drawX + config.gridSize / 3,
+                            drawY + config.gridSize / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            drawX + config.gridSize / 3,
+                            drawY + config.gridSize * 2 / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.fill();
                     } else if (game.direction === 'up') {
                         ctx.beginPath();
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize / 3,
+                            drawX + config.gridSize / 3,
+                            drawY + config.gridSize / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize * 2 / 3,
-                            segment.y * config.gridSize + config.gridSize / 3,
+                            drawX + config.gridSize * 2 / 3,
+                            drawY + config.gridSize / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.fill();
                     } else if (game.direction === 'down') {
                         ctx.beginPath();
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize / 3,
-                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            drawX + config.gridSize / 3,
+                            drawY + config.gridSize * 2 / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.arc(
-                            segment.x * config.gridSize + config.gridSize * 2 / 3,
-                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            drawX + config.gridSize * 2 / 3,
+                            drawY + config.gridSize * 2 / 3,
                             eyeSize, 0, Math.PI * 2
                         );
                         ctx.fill();
                     }
                 } else if (isTail) {
-                    // 蛇尾 - 暗绿色，圆角矩形（偏小）
+                    // 蛇尾 - 暗绿色，圆角矩形（偏小）- 考虑墙壁偏移
                     ctx.fillStyle = '#2f855a';
                     ctx.beginPath();
                     ctx.roundRect(
-                        segment.x * config.gridSize + 3,
-                        segment.y * config.gridSize + 3,
+                        drawX + 3,
+                        drawY + 3,
                         config.gridSize - 6,
                         config.gridSize - 6,
                         4
                     );
                     ctx.fill();
                 } else {
-                    // 蛇身 - 绿色，矩形
+                    // 蛇身 - 绿色，矩形 - 考虑墙壁偏移
                     ctx.fillStyle = '#38a169';
                     ctx.fillRect(
-                        segment.x * config.gridSize + 1,
-                        segment.y * config.gridSize + 1,
+                        drawX + 1,
+                        drawY + 1,
                         config.gridSize - 2,
                         config.gridSize - 2
                     );
                 }
             });
             
-            // 绘制食物
+            // 绘制食物 - 考虑墙壁偏移
             ctx.fillStyle = '#ed8936';
             ctx.beginPath();
             ctx.roundRect(
-                game.food.x * config.gridSize,
-                game.food.y * config.gridSize,
+                game.food.x * config.gridSize + wallOffset,
+                game.food.y * config.gridSize + wallOffset,
                 config.gridSize,
                 config.gridSize,
                 10
@@ -653,6 +662,83 @@
             return game.snake.some(segment => 
                 segment.x === game.food.x && segment.y === game.food.y
             );
+        }
+        
+        // 绘制漂亮的水晶边界墙
+        function drawWalls() {
+            const wallThickness = 6;
+            const cornerRadius = 12;
+            
+            // 墙的颜色 - 渐变效果
+            const wallGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            wallGradient.addColorStop(0, '#667eea');
+            wallGradient.addColorStop(0.5, '#764ba2');
+            wallGradient.addColorStop(1, '#667eea');
+            
+            // 阴影效果
+            ctx.shadowColor = 'rgba(102, 126, 234, 0.6)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // 绘制上边界墙
+            ctx.fillStyle = wallGradient;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, canvas.width, wallThickness, cornerRadius);
+            ctx.fill();
+            
+            // 绘制下边界墙
+            ctx.beginPath();
+            ctx.roundRect(0, canvas.height - wallThickness, canvas.width, wallThickness, cornerRadius);
+            ctx.fill();
+            
+            // 绘制左边界墙
+            ctx.beginPath();
+            ctx.roundRect(0, 0, wallThickness, canvas.height, cornerRadius);
+            ctx.fill();
+            
+            // 绘制右边界墙
+            ctx.beginPath();
+            ctx.roundRect(canvas.width - wallThickness, 0, wallThickness, canvas.height, cornerRadius);
+            ctx.fill();
+            
+            // 重置阴影
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // 绘制墙角的装饰点
+            ctx.fillStyle = '#48bb78';
+            const dotRadius = 2;
+            
+            // 左上角装饰
+            ctx.beginPath();
+            ctx.arc(wallThickness, wallThickness, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 右上角装饰
+            ctx.beginPath();
+            ctx.arc(canvas.width - wallThickness, wallThickness, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 左下角装饰
+            ctx.beginPath();
+            ctx.arc(wallThickness, canvas.height - wallThickness, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 右下角装饰
+            ctx.beginPath();
+            ctx.arc(canvas.width - wallThickness, canvas.height - wallThickness, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制游戏区域内部的浅色边界线（可选）
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(wallThickness, wallThickness, 
+                         canvas.width - wallThickness * 2, 
+                         canvas.height - wallThickness * 2, 8);
+            ctx.stroke();
         }
         
         // 触摸控制
