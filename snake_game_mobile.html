@@ -227,11 +227,15 @@
 <body>
     <!-- 顶部状态栏 -->
     <div class="stats-bar">
-        <div class="game-title">贪食蛇游戏</div>
+        <div class="game-title">贪食蛇游戏（陈翔递进版）</div>
         <div class="stats-values">
             <div class="stat">
                 <span class="stat-label">长度</span>
                 <span class="stat-value" id="scoreDisplay">3</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">速度</span>
+                <span id="speedDisplay" style="color: #ed8936; display: block; font-size: 1.4em; font-weight: bold;" title="初始速度">x1.0</span>
             </div>
             <div class="stat">
                 <span class="stat-label">最高</span>
@@ -287,10 +291,12 @@
     </div>
 
     <script>
-        // 游戏配置 - 减小网格大小，增加跑道空间
+        // 游戏配置 - 陈翔递进版：速度逐步增加
         const config = {
             gridSize: 18, // 从20减小到18，增加网格数量，让跑道更宽
-            initialSpeed: 100,
+            baseSpeed: 200, // 初始速度较慢（200ms）
+            speedMultiplier: 0.9, // 每吃一个苹果速度乘以此系数（减少10%间隔）
+            currentSpeed: 200, // 当前速度（初始为baseSpeed）
             canvasSize: 0
         };
         
@@ -307,7 +313,8 @@
             isPlaying: true,
             isPaused: false,
             score: 3,  // 初始3分对应蛇的3格
-            highScore: 0
+            highScore: 0,
+            speedLevel: 0 // 速度级别（0为初始）
         };
         
         // DOM元素
@@ -620,14 +627,24 @@
             }
         }
         
+        // 更新速度显示
+        function updateSpeedDisplay() {
+            const speedElement = document.getElementById('speedDisplay');
+            if (speedElement) {
+                const speedPercent = Math.round((config.baseSpeed / config.currentSpeed) * 100);
+                speedElement.textContent = `x${(speedPercent / 100).toFixed(1)}`;
+                speedElement.title = `速度：${Math.round(config.currentSpeed)}ms/格（初始${config.baseSpeed}ms）`;
+            }
+        }
+        
         // 游戏结束
         function gameOver() {
             game.isPlaying = false;
-            alert(`游戏结束！\n长度: ${game.score}\n最高: ${game.highScore}\n\n点击确定重新开始`);
+            alert(`游戏结束！\n长度: ${game.score}\n最高: ${game.highScore}\n最后速度: ${Math.round(config.currentSpeed)}ms/格\n\n点击确定重新开始`);
             resetGame();
         }
         
-        // 重置游戏 - 从中央开始，支持宽屏
+        // 重置游戏 - 从中央开始，支持宽屏，重置速度（陈翔递进版）
         function resetGame() {
             // 计算宽屏游戏区域中央位置
             const gridCountX = Math.floor(canvas.width / config.gridSize);
@@ -648,6 +665,11 @@
             game.isPaused = false;
             game.score = 3;
             scoreDisplay.textContent = game.score;
+            
+            // 重置速度（陈翔递进版）
+            game.speedLevel = 0;
+            config.currentSpeed = config.baseSpeed;
+            updateSpeedDisplay();
             
             // 确保食物不在蛇身上
             do {
@@ -769,14 +791,14 @@
             }
         }, { passive: false });
         
-        // 游戏主循环
+        // 游戏主循环 - 使用当前速度
         let lastTime = 0;
         function gameLoop(timestamp = 0) {
             if (!game.isPlaying) return;
             
             const deltaTime = timestamp - lastTime;
             
-            if (deltaTime > config.initialSpeed) {
+            if (deltaTime > config.currentSpeed) {
                 update();
                 draw();
                 lastTime = timestamp;
