@@ -293,13 +293,17 @@
         
         // 游戏状态
         const game = {
-            snake: [{x: 10, y: 10}],
+            snake: [
+                {x: 8, y: 10},  // 蛇头
+                {x: 9, y: 10},  // 蛇身第一部分
+                {x: 10, y: 10}  // 蛇身第二部分
+            ],
             food: {x: 5, y: 5},
             direction: 'right',
             nextDirection: 'right',
             isPlaying: true,
             isPaused: false,
-            score: 3,
+            score: 3,  // 初始3分对应蛇的3格
             highScore: 0
         };
         
@@ -323,13 +327,24 @@
             console.log('画布大小:', maxSize);
         }
         
-        // 随机生成食物
+        // 随机生成食物（避免在蛇身上）
         function generateFood() {
             const gridCount = Math.floor(config.canvasSize / config.gridSize);
-            game.food = {
-                x: Math.floor(Math.random() * gridCount),
-                y: Math.floor(Math.random() * gridCount)
-            };
+            let attempts = 0;
+            const maxAttempts = 50;
+            
+            do {
+                game.food = {
+                    x: Math.floor(Math.random() * gridCount),
+                    y: Math.floor(Math.random() * gridCount)
+                };
+                attempts++;
+            } while (isFoodOnSnake() && attempts < maxAttempts);
+            
+            if (attempts >= maxAttempts) {
+                // 如果找不到位置，强制放在0,0位置
+                game.food = {x: 0, y: 0};
+            }
         }
         
         // 绘制游戏
@@ -338,31 +353,102 @@
             ctx.fillStyle = '#2d3748';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 绘制蛇
+            // 绘制蛇 - 区分头和尾
             game.snake.forEach((segment, index) => {
-                if (index === 0) {
-                    ctx.fillStyle = '#48bb78'; // 蛇头
+                const isHead = index === 0;
+                const isTail = index === game.snake.length - 1;
+                
+                if (isHead) {
+                    // 蛇头 - 亮绿色，圆形
+                    ctx.fillStyle = '#48bb78';
+                    ctx.beginPath();
+                    ctx.arc(
+                        segment.x * config.gridSize + config.gridSize / 2,
+                        segment.y * config.gridSize + config.gridSize / 2,
+                        config.gridSize / 2 - 1,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                    
+                    // 蛇头眼睛（小圆点）
+                    ctx.fillStyle = 'white';
+                    const eyeSize = config.gridSize / 6;
+                    if (game.direction === 'right') {
+                        ctx.beginPath();
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize - config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize - config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.fill();
+                    } else if (game.direction === 'left') {
+                        ctx.beginPath();
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.fill();
+                    } else if (game.direction === 'up') {
+                        ctx.beginPath();
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize * 2 / 3,
+                            segment.y * config.gridSize + config.gridSize / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.fill();
+                    } else if (game.direction === 'down') {
+                        ctx.beginPath();
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize / 3,
+                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.arc(
+                            segment.x * config.gridSize + config.gridSize * 2 / 3,
+                            segment.y * config.gridSize + config.gridSize * 2 / 3,
+                            eyeSize, 0, Math.PI * 2
+                        );
+                        ctx.fill();
+                    }
+                } else if (isTail) {
+                    // 蛇尾 - 暗绿色，圆角矩形（偏小）
+                    ctx.fillStyle = '#2f855a';
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        segment.x * config.gridSize + 3,
+                        segment.y * config.gridSize + 3,
+                        config.gridSize - 6,
+                        config.gridSize - 6,
+                        4
+                    );
+                    ctx.fill();
                 } else {
-                    ctx.fillStyle = '#38a169'; // 蛇身
+                    // 蛇身 - 绿色，矩形
+                    ctx.fillStyle = '#38a169';
+                    ctx.fillRect(
+                        segment.x * config.gridSize + 1,
+                        segment.y * config.gridSize + 1,
+                        config.gridSize - 2,
+                        config.gridSize - 2
+                    );
                 }
-                
-                ctx.fillRect(
-                    segment.x * config.gridSize,
-                    segment.y * config.gridSize,
-                    config.gridSize,
-                    config.gridSize
-                );
-                
-                // 圆角效果
-                ctx.beginPath();
-                ctx.roundRect(
-                    segment.x * config.gridSize,
-                    segment.y * config.gridSize,
-                    config.gridSize,
-                    config.gridSize,
-                    5
-                );
-                ctx.fill();
             });
             
             // 绘制食物
@@ -473,17 +559,40 @@
             resetGame();
         }
         
-        // 重置游戏
+        // 重置游戏 - 从中央开始
         function resetGame() {
-            game.snake = [{x: 10, y: 10}];
+            // 计算游戏区域中央位置
+            const gridCount = Math.floor(config.canvasSize / config.gridSize);
+            const centerX = Math.floor(gridCount / 2);
+            const centerY = Math.floor(gridCount / 2);
+            
+            // 蛇从中央开始，水平向右
+            game.snake = [
+                {x: centerX, y: centerY},        // 蛇头
+                {x: centerX - 1, y: centerY},   // 蛇身第一部分
+                {x: centerX - 2, y: centerY}    // 蛇身第二部分
+            ];
+            
             game.direction = 'right';
             game.nextDirection = 'right';
             game.isPlaying = true;
             game.isPaused = false;
             game.score = 3;
             scoreDisplay.textContent = game.score;
-            generateFood();
+            
+            // 确保食物不在蛇身上
+            do {
+                generateFood();
+            } while (isFoodOnSnake());
+            
             gameLoop();
+        }
+        
+        // 检查食物是否在蛇身上
+        function isFoodOnSnake() {
+            return game.snake.some(segment => 
+                segment.x === game.food.x && segment.y === game.food.y
+            );
         }
         
         // 触摸控制
